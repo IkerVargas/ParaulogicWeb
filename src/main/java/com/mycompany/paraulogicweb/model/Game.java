@@ -5,11 +5,10 @@ package com.mycompany.paraulogicweb.model;
 import com.mycompany.paraulogicweb.daos.WordDAO;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class Game {
     private List<Letter> letras;
-    private List<Word> palabrasEnecontradas;
+    private List<Word> palabrasEncontradas;
     private Score puntuacion;
     private List<String> palabrasValidas;
     private WordDAO wordDAO;
@@ -17,7 +16,7 @@ public class Game {
     public Game(List<Letter> letras) {
         this.wordDAO = new WordDAO();
         this.letras = letras;
-        this.palabrasEnecontradas = new ArrayList<>();
+        this.palabrasEncontradas = new ArrayList<>();
         this.puntuacion = new Score();
         this.palabrasValidas = filtrarPalabrasValidas();
         System.out.println("Letras generadas: " + letras.stream().map(l -> String.valueOf(l.getCaracter())).toList());
@@ -28,8 +27,8 @@ public class Game {
         return letras;
     }
 
-    public List<Word> getPalabrasEnecontradas() {
-        return palabrasEnecontradas;
+    public List<Word> getPalabrasEncontradas() {
+        return palabrasEncontradas;
     }
 
     public Score getPuntuacion() {

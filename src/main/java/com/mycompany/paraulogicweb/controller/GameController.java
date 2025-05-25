@@ -26,14 +26,13 @@ public class GameController extends HttpServlet {
         }
     }
 
-
     @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         request.setAttribute("letras", game.getLetras());
         request.setAttribute("puntos", game.getPuntuacion());
-        request.setAttribute("palabrasEncontradas", game.getPalabrasEnecontradas());
+        request.setAttribute("palabras", game.getPalabrasEncontradas());
 
-        RequestDispatcher dispatcher = request.getRequestDispatcher("game.jsp");
+        RequestDispatcher dispatcher = request.getRequestDispatcher("index.jsp");
         if (dispatcher != null) {
             dispatcher.forward(request, response);
         } else {
@@ -47,12 +46,12 @@ public class GameController extends HttpServlet {
         Word palabra = new Word(strPalabra);
         String mensaje = "";
 
-        if(!WorldValidator.validarPalabra(palabra, letraCentral, game.getTodasPalabras())) {
-            mensaje = "La palabra no es valida";
-        } else if (game.getPalabrasEnecontradas().contains(palabra)) {
+        if (!WorldValidator.validarPalabra(palabra, letraCentral, game.getTodasPalabras())) {
+            mensaje = "La palabra no es válida";
+        } else if (game.getPalabrasEncontradas().contains(palabra)) {
             mensaje = "La palabra ya ha sido encontrada";
         } else {
-            game.getPalabrasEnecontradas().add(palabra);
+            game.getPalabrasEncontradas().add(palabra);
             game.getPuntuacion().agregarPuntos(palabra.calcularPuntos());
             mensaje = "Palabra encontrada: " + strPalabra;
         }
@@ -60,11 +59,9 @@ public class GameController extends HttpServlet {
         request.setAttribute("mensaje", mensaje);
         request.setAttribute("letras", game.getLetras());
         request.setAttribute("puntos", game.getPuntuacion());
-        request.setAttribute("palabrasEncontradas", game.getPalabrasEnecontradas());
+        request.setAttribute("palabras", game.getPalabrasEncontradas());
 
-        RequestDispatcher dispatcher = request.getRequestDispatcher("game.jsp");
+        RequestDispatcher dispatcher = request.getRequestDispatcher("index.jsp");
         dispatcher.forward(request, response);
-
     }
-
 }
