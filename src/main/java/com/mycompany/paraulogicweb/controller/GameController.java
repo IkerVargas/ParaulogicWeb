@@ -22,7 +22,6 @@ public class GameController extends HttpServlet {
         //generar las letras
         List<Letter> letras = GameUtils.genararLetras();
         this.game = new Game(letras);
-        Collections.shuffle(letras);
 
         //buscar una letra central entre las letras generadas
         for (Letter letra : letras) {
