@@ -47,7 +47,7 @@ public class GameController extends HttpServlet {
         String mensaje = "";
 
         if (!WorldValidator.validarPalabra(palabra, letraCentral, game.getTodasPalabras())) {
-            mensaje = "La palabra no es válida";
+            mensaje = "La palabra no es valida";
         } else if (game.getPalabrasEncontradas().contains(palabra)) {
             mensaje = "La palabra ya ha sido encontrada";
         } else {
