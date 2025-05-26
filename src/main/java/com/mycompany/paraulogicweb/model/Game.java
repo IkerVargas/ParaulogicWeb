@@ -33,22 +33,20 @@ public class Game {
     }
 
     public boolean agregarPalabra(String palabra) {
-
+        boolean palabraAgregada = true;
         //verificar si la palabra se ha encontrado
         for (Word w : palabrasEncontradas) {
             if (w.getTexto().equals(palabra.toLowerCase())) {
-                return false;
+                palabraAgregada = false;
             }
         }
-
         //calcula y agregamos los puntos a la puntuacion
         int puntos = calcularPuntos(palabra.toLowerCase());
         puntuacion.agregarPuntos(puntos);
-
         //agrega la palabra a la lista
         palabrasEncontradas.add(new Word(palabra.toLowerCase()));
 
-        return true;
+        return palabraAgregada;
     }
 
 
