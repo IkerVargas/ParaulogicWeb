@@ -33,22 +33,20 @@ public class Game {
     }
 
     public boolean agregarPalabra(String palabra) {
-        // Normalizar palabra (por ejemplo, convertir a minúsculas)
-        String palabraNormalizada = palabra.toLowerCase();
 
-        // Verificar si ya fue encontrada
+        //verificar si la palabra se ha encontrado
         for (Word w : palabrasEncontradas) {
-            if (w.getTexto().equals(palabraNormalizada)) {
+            if (w.getTexto().equals(palabra.toLowerCase())) {
                 return false;
             }
         }
 
-        // Calcular y agregar puntos
-        int puntos = calcularPuntos(palabraNormalizada);
+        //calcula y agregamos los puntos a la puntuacion
+        int puntos = calcularPuntos(palabra.toLowerCase());
         puntuacion.agregarPuntos(puntos);
 
-        // Agregar la palabra a la lista
-        palabrasEncontradas.add(new Word(palabraNormalizada));
+        //agrega la palabra a la lista
+        palabrasEncontradas.add(new Word(palabra.toLowerCase()));
 
         return true;
     }
@@ -69,27 +67,36 @@ public class Game {
     }
 
     private boolean sePuedeFormar(String palabra) {
-        // obtenemos todas las letras válidas como un String para fácil búsqueda
+        boolean valida = true;
+        //obtiene todas las letras validas del juego
         String letrasValidas = getTodasLetras().toUpperCase();
 
-        // recorremos cada letra de la palabra y comprobamos si está en las letras válidas
+        //recorre cada letra de la palabra para ver si esta entre las que son validas
         for (char c : palabra.toUpperCase().toCharArray()) {
             if (letrasValidas.indexOf(c) == -1) {
-                // letra no está entre las válidas, palabra inválida
-                return false;
+                //la letra no esta entre las que son validas
+                valida = false;
             }
         }
 
-        // todas las letras están dentro de las válidas, palabra válida
-        return true;
+        return valida;
     }
 
 
     public String getTodasLetras() {
+        //convierte las letras a un string
         StringBuilder letrasStr = new StringBuilder();
+        //recorre cada letra y las concatena
         for (Letter letra : this.letras) {
-            letrasStr.append(letra.getCaracter());
+            //verifica si la letra es central y la agrega en mayuscula
+            if (letra.isEsCentral()) {
+                letrasStr.append(Character.toUpperCase(letra.getCaracter()));
+            } else {
+                //si no es central, la agrega en minuscula
+                letrasStr.append(Character.toLowerCase(letra.getCaracter()));
+            }
         }
+        //devuelve el string con todas las letras
         return letrasStr.toString();
     }
 
@@ -115,11 +122,14 @@ public class Game {
                 puntos = 10;
                 break;
             default:
-                puntos = 0;
+                if (longitud > 7) {
+                    puntos = 10;
+                } else {
+                    puntos = 0;
+                }
                 break;
         }
         return puntos;
     }
-
 
 }
