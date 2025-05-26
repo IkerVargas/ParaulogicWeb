@@ -19,22 +19,22 @@ public class DatabaseConnection {
     }
 
     public static boolean isPalabraValida(String palabra) {
+        boolean esValida = false;
         String sql = "SELECT 1 FROM words WHERE word = ? LIMIT 1";
 
         try (Connection conn = DatabaseConnection.conectar();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
-            stmt.setString(1, palabra.toLowerCase()); // asumimos palabras en minusculas en la db
+            stmt.setString(1, palabra.toLowerCase());
 
             try (ResultSet rs = stmt.executeQuery()) {
-                return rs.next(); // si encuentra, devuelve true
+                esValida = rs.next(); //devuelve true si hay una fila, osea que existe
             }
 
         } catch (SQLException e) {
             e.printStackTrace();
-            // aquí puedes hacer un log o lanzar excepción según tu arquitectura
         }
 
-        return false; // si ocurre un error o no encuentra, devuelve false
+        return esValida;
     }
 }

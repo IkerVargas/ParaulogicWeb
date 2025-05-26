@@ -49,7 +49,6 @@ public class Game {
         return agregada;
     }
 
-
     //filtra las palabras validas a partir de las letras disponibles y la letra central
     private List<String> filtrarPalabrasValidas() {
         List<String> todasLasLetras = wordDAO.obtenerTodasLasPalabras();

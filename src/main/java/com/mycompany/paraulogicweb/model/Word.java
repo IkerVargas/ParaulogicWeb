@@ -11,7 +11,6 @@ public class Word {
         return texto;
     }
 
-
     @Override
     public String toString() {
         return texto;
