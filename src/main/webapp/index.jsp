@@ -33,7 +33,6 @@
             margin: 0 auto 60px auto;
             padding: 25px 30px;
             border-radius: 10px;
-            box-shadow: 0 0 12px rgb(0 0 0 / 0.1);
         }
         .btn-primary {
             width: 100%;
