@@ -35,10 +35,6 @@ public class Game {
         return puntuacion;
     }
 
-    public List<String> getPalabrasValidas() {
-        return palabrasValidas;
-    }
-
     //filtra las palabras validas a partir de las letras disponibles y la letra central
     private List<String> filtrarPalabrasValidas() {
         List<String> todasLasLetras = wordDAO.obtenerTodasLasPalabras();
@@ -72,13 +68,12 @@ public class Game {
         return palabraValida;
     }
 
-    public String getTodasPalabras() {
-        String letras = "";
-        for (int i = 0; i < this.letras.size(); i++) {
-            letras += this.letras.get(i);
+    public String getTodasLetras() {
+        StringBuilder letrasStr = new StringBuilder();
+        for (Letter letra : this.letras) {
+            letrasStr.append(letra.getCaracter());
         }
-        return letras;
+        return letrasStr.toString();
     }
-
 
 }

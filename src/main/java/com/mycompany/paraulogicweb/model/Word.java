@@ -36,4 +36,9 @@ public class Word {
         }
         return puntos;
     }
+
+    @Override
+    public String toString() {
+        return texto;
+    }
 }

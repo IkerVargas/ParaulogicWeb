@@ -21,83 +21,126 @@ public class GameUtils {
     public static List<Letter> genararLetras() {
         List<String> todasLasPalabras = wordDAO.obtenerTodasLasPalabras();
 
-        //selecciona una palabra base aleatoria de la base de datos
+        // Selecciona una palabra base aleatoria con longitud >= 3
         String palabraBase;
         do {
             palabraBase = todasLasPalabras.get(random.nextInt(todasLasPalabras.size()));
         } while (palabraBase.length() < 3);
         System.out.println("Palabra base seleccionada: " + palabraBase);
 
-        //obtiene letras de la palabra base
+        // Letras de la palabra base sin repetir
         List<Character> letrasBase = new ArrayList<>();
         for (char c : palabraBase.toCharArray()) {
-            letrasBase.add(c);
+            if (!letrasBase.contains(c)) {
+                letrasBase.add(c);
+            }
         }
 
-        //selecciona la letra central
+        // Selecciona la letra central aleatoriamente dentro de letrasBase
         char letraCentral = letrasBase.get(random.nextInt(letrasBase.size()));
+
         List<Letter> letrasHexagonales = new ArrayList<>();
+
+        // Añade la letra central primero, marcada como central
         letrasHexagonales.add(new Letter(letraCentral, true));
 
-        //agregar las letras de la palabra base
+        // Añade las demás letras de la palabra base excepto la central y sin superar 7 letras en total
         for (char c : letrasBase) {
-            if (letrasHexagonales.size() < 7) {
+            if (c != letraCentral && letrasHexagonales.size() < 7) {
                 letrasHexagonales.add(new Letter(c, false));
             }
         }
 
-        //completar con letras de palabras que contengan la letra central
-        List<Character> palabras = new ArrayList<>();
+        // Completa con letras de palabras que contienen la letra central, sin repetir letras ya añadidas
+        List<Character> letrasExtras = new ArrayList<>();
         for (String palabra : todasLasPalabras) {
             if (palabra.contains(String.valueOf(letraCentral)) && palabra.length() >= 3) {
                 for (char c : palabra.toCharArray()) {
-                    if (!palabras.contains(c)) { //evitar duplicar palabras
-                        palabras.add(c);
+                    if (!letrasExtras.contains(c) && !containsChar(letrasHexagonales, c)) {
+                        letrasExtras.add(c);
                     }
                 }
             }
         }
 
-        Collections.shuffle(palabras);
-        while (letrasHexagonales.size() < 7 && !palabras.isEmpty()) {
-            letrasHexagonales.add(new Letter(palabras.get(random.nextInt(palabras.size())), false));
-        }
+        // Mezcla las letras extras
+        Collections.shuffle(letrasExtras);
 
-        //aseguramos 2 vocales i 4 consonantes
-        int contarVocales = (int) letrasHexagonales.stream().map(l -> l.getCaracter()).filter(GameUtils::esVocal).count();
-        int contarConsonantes = letrasHexagonales.size() - contarVocales - 1; //-1 por la letra central
-
-        while (contarVocales < 2 && letrasHexagonales.size() < 7) {
-            char vocal = VOCALES[random.nextInt(VOCALES.length)];
-            letrasHexagonales.add(new Letter(vocal, false));
-            contarVocales++;
-        }
-
-        while (contarConsonantes < 4 && letrasHexagonales.size() < 7) {
-            char consonant = CONSONANTES[random.nextInt(CONSONANTES.length)];
-            letrasHexagonales.add(new Letter(consonant, false));
-            contarConsonantes++;
-        }
-
-        //completar si hace falta con letras aleatorias
-        while (letrasHexagonales.size() < 7) {
-            char c = random.nextBoolean() ? VOCALES[random.nextInt(VOCALES.length)] : CONSONANTES[random.nextInt(CONSONANTES.length)];
+        // Añade letras extras hasta completar 7 letras
+        for (char c : letrasExtras) {
+            if (letrasHexagonales.size() >= 7) break;
             letrasHexagonales.add(new Letter(c, false));
         }
 
-        System.out.println("Letras generadas con posibles repeticiones: " + letrasHexagonales.stream().map(l -> String.valueOf(l.getCaracter())).toList());
+        // Asegura al menos 2 vocales y 4 consonantes (incluyendo la central)
+        int contarVocales = (int) letrasHexagonales.stream()
+                .filter(l -> esVocal(l.getCaracter()))
+                .count();
+
+        int contarConsonantes = letrasHexagonales.size() - contarVocales;
+
+        // Añade vocales si hacen falta
+        while (contarVocales < 2 && letrasHexagonales.size() < 7) {
+            char vocal = VOCALES[random.nextInt(VOCALES.length)];
+            if (!containsChar(letrasHexagonales, vocal)) {
+                letrasHexagonales.add(new Letter(vocal, false));
+                contarVocales++;
+            }
+        }
+
+        // Añade consonantes si hacen falta
+        while (contarConsonantes < 4 && letrasHexagonales.size() < 7) {
+            char consonante = CONSONANTES[random.nextInt(CONSONANTES.length)];
+            if (!containsChar(letrasHexagonales, consonante)) {
+                letrasHexagonales.add(new Letter(consonante, false));
+                contarConsonantes++;
+            }
+        }
+
+        // Completa con letras aleatorias si no llegamos a 7
+        while (letrasHexagonales.size() < 7) {
+            char c = random.nextBoolean() ? VOCALES[random.nextInt(VOCALES.length)] : CONSONANTES[random.nextInt(CONSONANTES.length)];
+            if (!containsChar(letrasHexagonales, c)) {
+                letrasHexagonales.add(new Letter(c, false));
+            }
+        }
+
+        // Finalmente mezcla todas las letras para que la central no siempre esté al principio
+        Collections.shuffle(letrasHexagonales);
+
+        // Pero ahora vuelve a asegurarte de que la letra central esté marcada correctamente:
+        for (Letter letra : letrasHexagonales) {
+            letra = new Letter(letra.getCaracter(), false);  // resetear todos
+        }
+        // Encuentra la letra central y marca como central
+        for (Letter letra : letrasHexagonales) {
+            if (letra.getCaracter() == letraCentral) {
+                letrasHexagonales.set(letrasHexagonales.indexOf(letra), new Letter(letra.getCaracter(), true));
+                break;
+            }
+        }
+
+        System.out.println("Letras generadas: " + letrasHexagonales.stream().map(l -> String.valueOf(l.getCaracter())).toList());
+
         return letrasHexagonales;
     }
 
-    //comprueba si es una vocal
-    private static boolean esVocal(char c) {
-        boolean esVocal = false;
-        for (char vocal : VOCALES) {
-            if (c == vocal) {
-                esVocal = true;
+    private static boolean containsChar(List<Letter> lista, char c) {
+        for (Letter letra : lista) {
+            if (letra.getCaracter() == c) {
+                return true;
             }
         }
-        return esVocal;
+        return false;
     }
+
+    private static boolean esVocal(char c) {
+        c = Character.toLowerCase(c);
+        for (char vocal : VOCALES) {
+            if (c == vocal) return true;
+        }
+        return false;
+    }
+
 
 }

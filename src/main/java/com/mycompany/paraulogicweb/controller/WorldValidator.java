@@ -10,7 +10,7 @@ public class WorldValidator {
         letrasValidas = letrasValidas.toUpperCase();
 
         //comprovar si la palabra contiene la letra central y que tenga una longitud de al menos 3 caracteres
-        if (texto.length() < 3 || !texto.contains(String.valueOf(letraCentral.getCaracter()))) {
+        if (texto.length() < 3 || !texto.contains(String.valueOf(Character.toUpperCase(letraCentral.getCaracter())))) {
             System.out.println("La palabra no tiene la letra central o no tiene minimo 3 letras");
             valido = false;
         }

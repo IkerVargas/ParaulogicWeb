@@ -16,4 +16,9 @@ public class Letter {
     public boolean isEsCentral() {
         return esCentral;
     }
+
+    @Override
+    public String toString() {
+        return String.valueOf(caracter);
+    }
 }
