@@ -16,8 +16,4 @@ public class Score {
     public int getPuntosTotales() {
         return puntosTotales;
     }
-    @Override
-    public String toString(){
-        return String.format("%d",puntosTotales);
-    }
 }

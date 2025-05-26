@@ -32,6 +32,28 @@ public class Game {
         return puntuacion;
     }
 
+    public boolean agregarPalabra(String palabra) {
+        // Normalizar palabra (por ejemplo, convertir a minúsculas)
+        String palabraNormalizada = palabra.toLowerCase();
+
+        // Verificar si ya fue encontrada
+        for (Word w : palabrasEncontradas) {
+            if (w.getTexto().equals(palabraNormalizada)) {
+                return false;
+            }
+        }
+
+        // Calcular y agregar puntos
+        int puntos = calcularPuntos(palabraNormalizada);
+        puntuacion.agregarPuntos(puntos);
+
+        // Agregar la palabra a la lista
+        palabrasEncontradas.add(new Word(palabraNormalizada));
+
+        return true;
+    }
+
+
     //filtra las palabras validas a partir de las letras disponibles y la letra central
     private List<String> filtrarPalabrasValidas() {
         List<String> todasLasLetras = wordDAO.obtenerTodasLasPalabras();
@@ -46,24 +68,22 @@ public class Game {
         return filtradas;
     }
 
-    // verifica si la palabra puede ser formada con las letras disponibles, teniendo en cuenta repeticiones
     private boolean sePuedeFormar(String palabra) {
-        boolean palabraValida = true;
-        Map<Character, Integer> cantidadDeLetras = new HashMap<>();
-        for (Letter letra : letras) {
-            char c = letra.getCaracter();
-            cantidadDeLetras.put(c, cantidadDeLetras.getOrDefault(c, 0) + 1);
-        }
+        // obtenemos todas las letras válidas como un String para fácil búsqueda
+        String letrasValidas = getTodasLetras().toUpperCase();
 
-        Map<Character, Integer> cantidadUsadas = new HashMap<>();
-        for (char c : palabra.toCharArray()) {
-            cantidadUsadas.put(c, cantidadUsadas.getOrDefault(c, 0) + 1);
-            if (!cantidadDeLetras.containsKey(c) || cantidadUsadas.get(c) > cantidadDeLetras.get(c)) {
-                palabraValida = false;
+        // recorremos cada letra de la palabra y comprobamos si está en las letras válidas
+        for (char c : palabra.toUpperCase().toCharArray()) {
+            if (letrasValidas.indexOf(c) == -1) {
+                // letra no está entre las válidas, palabra inválida
+                return false;
             }
         }
-        return palabraValida;
+
+        // todas las letras están dentro de las válidas, palabra válida
+        return true;
     }
+
 
     public String getTodasLetras() {
         StringBuilder letrasStr = new StringBuilder();
@@ -72,5 +92,34 @@ public class Game {
         }
         return letrasStr.toString();
     }
+
+    //calcula los puntos depende del numero de letras de la palabra
+    public int calcularPuntos(String palabra) {
+        int puntos = 0;
+        int longitud = palabra.length();
+
+        switch (longitud) {
+            case 3:
+                puntos = 1;
+                break;
+            case 4:
+                puntos = 2;
+                break;
+            case 5:
+                puntos = 3;
+                break;
+            case 6:
+                puntos = 5;
+                break;
+            case 7:
+                puntos = 10;
+                break;
+            default:
+                puntos = 0;
+                break;
+        }
+        return puntos;
+    }
+
 
 }

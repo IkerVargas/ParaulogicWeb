@@ -38,7 +38,7 @@ public class GameController extends HttpServlet {
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         request.setAttribute("letras", game.getLetras());
         _log.info("Letras generadas: " + game.getLetras().stream().map(l -> String.valueOf(l.getCaracter())).toList());
-        request.setAttribute("puntos", game.getPuntuacion());
+        request.setAttribute("puntos", game.getPuntuacion().getPuntosTotales());
         request.setAttribute("palabras", game.getPalabrasEncontradas());
 
         RequestDispatcher dispatcher = request.getRequestDispatcher("index.jsp");
@@ -59,21 +59,22 @@ public class GameController extends HttpServlet {
         String letrasValidas = game.getTodasLetras();
 
         //validar que las palabras sean validas
-        if (!WorldValidator.validarPalabra(palabra, letraCentral, letrasValidas)) {
+        if (!WorldValidator.validarPalabra(palabra, letraCentral, game.getTodasLetras())) {
             mensaje = "La palabra no es válida";
-        } else if (game.getPalabrasEncontradas().contains(palabra)) {
-            mensaje = "La palabra ya ha sido encontrada";
         } else {
-            //si la palabra es valida y no se ha repetido se egrega a palabras encontradas
-            game.getPalabrasEncontradas().add(palabra);
-            game.getPuntuacion().agregarPuntos(palabra.calcularPuntos());
-            mensaje = "Palabra encontrada: " + strPalabra;
+            boolean palabraAgregada = game.agregarPalabra(strPalabra);
+            if (!palabraAgregada) {
+                mensaje = "La palabra ya ha sido encontrada";
+            } else {
+                mensaje = "Palabra encontrada: " + strPalabra;
+            }
         }
+
 
         //asigna valores para mostrarlos en el index
         request.setAttribute("mensaje", mensaje);
         request.setAttribute("letras", game.getLetras());
-        request.setAttribute("puntos", game.getPuntuacion());
+        request.setAttribute("puntos", game.getPuntuacion().getPuntosTotales());
         request.setAttribute("palabras", game.getPalabrasEncontradas());
 
         //reeenvia los valores para actualizar la vista con los nuevos datos
