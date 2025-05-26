@@ -60,6 +60,7 @@
 <h1 class="header-title">Paraulogic Web</h1>
 
 <div class="letters-box" aria-label="Letras generadas">
+    <label for="letras">Letras: </label>
     ${letras}
 </div>
 
@@ -70,7 +71,7 @@
         <input type="text" class="form-control" id="palabra" name="palabra" required autocomplete="off" autofocus />
     </div>
 
-    <button type="submit" class="btn btn-primary">Verificar Paraula</button>
+    <button type="submit" class="btn btn-primary">Verificar Palabra</button>
 
     <div class="info-text">
         <p>Missatge: ${mensaje}</p>
