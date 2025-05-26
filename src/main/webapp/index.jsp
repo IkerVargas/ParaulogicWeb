@@ -49,7 +49,7 @@
     <h1 class="header-title">Paraulogic Web</h1>
 
     <div class="letters-box" aria-label="Letras generadas">
-        <label for="letras">Letras: </label>
+        <label for="letras">Letras generadas: </label>
         ${letras}
     </div>
 
@@ -63,7 +63,7 @@
         <button type="submit" class="btn btn-primary">Verificar Palabra</button>
 
         <div class="info-text">
-            <p>Missatge: ${mensaje}</p>
+            <p>${infoPalabra}</p>
             <p>Punts: ${puntos}</p>
             <p>Palabras Encontradas: ${palabras}</p>
         </div>

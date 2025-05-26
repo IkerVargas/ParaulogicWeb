@@ -1,147 +1,106 @@
 package com.mycompany.paraulogicweb.utils;
 
-
-
-import com.mycompany.paraulogicweb.daos.*;
-import com.mycompany.paraulogicweb.model.*;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Random;
-
+import com.mycompany.paraulogicweb.daos.WordDAO;
+import com.mycompany.paraulogicweb.model.Letter;
+import java.util.*;
 
 public class GameUtils {
     private static final Random random = new Random();
     private static final WordDAO wordDAO = new WordDAO();
-    private static final char[]  VOCALES= {'a', 'e', 'i', 'o', 'u'};
+    private static final char[] VOCALES = {'a', 'e', 'i', 'o', 'u'};
     private static final char[] CONSONANTES = {'b', 'c', 'd', 'f', 'g', 'h', 'j', 'k', 'l', 'm', 'n', 'p', 'q', 'r', 's', 't', 'v', 'w', 'x', 'y', 'z'};
 
-    //genera letras asegurando 2 vocales y 4 consonantes, permitiendo repeticiones
     public static List<Letter> genararLetras() {
-        List<String> todasLasPalabras = wordDAO.obtenerTodasLasPalabras();
+        List<String> palabras = wordDAO.obtenerTodasLasPalabras();
+        List<Letter> letras = new ArrayList<>();
 
-        //selecciona una palabra base aleatoria con longitud >= 3
-        String palabraBase;
-        do {
-            palabraBase = todasLasPalabras.get(random.nextInt(todasLasPalabras.size()));
-        } while (palabraBase.length() < 3);
-        System.out.println("Palabra base seleccionada: " + palabraBase);
+        //elige una palabra random de la lista de palabras
+        String palabraBase = palabras.get(random.nextInt(palabras.size()));
+        System.out.println("Palabra base: " + palabraBase);
 
-        // Letras de la palabra base sin repetir
+        //mete las letras de la palabra base en una lista sin repetir
         List<Character> letrasBase = new ArrayList<>();
         for (char c : palabraBase.toCharArray()) {
-            if (!letrasBase.contains(c)) {
+            if (!letrasBase.contains(c)){
                 letrasBase.add(c);
             }
         }
 
-        // Selecciona la letra central aleatoriamente dentro de letrasBase
+        //elige una letra random de la palabra base como la letra central
         char letraCentral = letrasBase.get(random.nextInt(letrasBase.size()));
-
-        List<Letter> letras = new ArrayList<>();
-
-        // Añade la letra central primero, marcada como central
         letras.add(new Letter(letraCentral, true));
 
-        // Añade las demás letras de la palabra base excepto la central y sin superar 7 letras en total
-        for (char c : letrasBase) {
-            if (c != letraCentral && letras.size() < 7) {
-                letras.add(new Letter(c, false));
-            }
-        }
-
-        // Completa con letras de palabras que contienen la letra central, sin repetir letras ya añadidas
-        List<Character> letrasNoCentral = new ArrayList<>();
-        for (String palabra : todasLasPalabras) {
-            if (palabra.contains(String.valueOf(letraCentral)) && palabra.length() >= 3) {
+        //crea una lista de mas letras que tienen palabras con la letra central
+        List<Character> masLetras = new ArrayList<>();
+        for (String palabra : palabras) {
+            //solo coge palabras que tengan la letra central y minimo 3 letras
+            if (palabra.indexOf(letraCentral) != -1 && palabra.length() >= 3) {
+                //mete sus letras si no estan ya en la lista
                 for (char c : palabra.toCharArray()) {
-                    if (!letrasNoCentral.contains(c) && !contieneCaracter(letras, c)) {
-                        letrasNoCentral.add(c);
+                    if (!contiene(letras, c) && !masLetras.contains(c)) {
+                        masLetras.add(c);
                     }
                 }
             }
         }
 
-        Collections.shuffle(letrasNoCentral);
-
-        // Añade letras extras hasta completar 7 letras
-        for (char c : letrasNoCentral) {
-            if (letras.size() >= 7) break;
-            letras.add(new Letter(c, false));
-        }
-
-        // Asegura al menos 2 vocales y 4 consonantes (incluyendo la central)
-        int contarVocales = 0;
-        for (Letter l : letras) {
-            if (esVocal(l.getCaracter())) {
-                contarVocales++;
-            }
-        }
-
-        int contarConsonantes = letras.size() - contarVocales;
-
-        // Añade vocales si hacen falta
-        while (contarVocales < 2 && letras.size() < 7) {
-            char vocal = VOCALES[random.nextInt(VOCALES.length)];
-            if (!contieneCaracter(letras, vocal)) {
-                letras.add(new Letter(vocal, false));
-                contarVocales++;
-            }
-        }
-
-        // Añade consonantes si hacen falta
-        while (contarConsonantes < 4 && letras.size() < 7) {
-            char consonante = CONSONANTES[random.nextInt(CONSONANTES.length)];
-            if (!contieneCaracter(letras, consonante)) {
-                letras.add(new Letter(consonante, false));
-                contarConsonantes++;
-            }
-        }
-
-        // Completa con letras aleatorias si no llegamos a 7
-        while (letras.size() < 7) {
-            char c = random.nextBoolean() ? VOCALES[random.nextInt(VOCALES.length)] : CONSONANTES[random.nextInt(CONSONANTES.length)];
-            if (!contieneCaracter(letras, c)) {
+        //añade letras hasta tener 7 como maximo
+        for (char c : masLetras) {
+            if (letras.size() < 7 && !contiene(letras, c)) {
                 letras.add(new Letter(c, false));
             }
         }
 
-        // Finalmente mezcla todas las letras para que la central no siempre esté al principio
+        //se asegura de tener minimo 2 vocales
+        int vocales = contarVocales(letras);
+        for (int i = 0; i < VOCALES.length && vocales < 2 && letras.size() < 7; i++) {
+            char v = VOCALES[i];
+            if (!contiene(letras, v)) {
+                letras.add(new Letter(v, false));
+                vocales++;
+            }
+        }
+
+        //se asegura de tener minimo 4 consonantes
+        int consonantes = letras.size() - vocales;
+        for (int i = 0; i < CONSONANTES.length && consonantes < 4 && letras.size() < 7; i++) {
+            char c = CONSONANTES[i];
+            if (!contiene(letras, c)) {
+                letras.add(new Letter(c, false));
+                consonantes++;
+            }
+        }
+
+        //mezcla el orden de las letras
         Collections.shuffle(letras);
 
-        // Asegúrate de que la letra central esté marcada correctamente:
-        for (int i = 0; i < letras.size(); i++) {
-            Letter l = letras.get(i);
-            if (l.getCaracter() == letraCentral) {
-                letras.set(i, new Letter(letraCentral, true));
-            } else {
-                letras.set(i, new Letter(l.getCaracter(), false));
-            }
+        //vuelve a marcar cual es la letra central
+        List<Letter> resultado = new ArrayList<>();
+        for (Letter l : letras) {
+            resultado.add(new Letter(l.getCaracter(), l.getCaracter() == letraCentral));
         }
 
-        System.out.println("Letras generadas: " + letras.stream().map(l -> String.valueOf(l.getCaracter())).toList());
-
-        return letras;
+        System.out.println("Letras generadas: " + resultado.stream().map(l -> String.valueOf(l.getCaracter())).toList());
+        return resultado;
     }
 
-
-    private static boolean contieneCaracter(List<Letter> lista, char c) {
-        for (Letter letra : lista) {
+    //mira si la lista de letras ya tiene ese caracter
+    private static boolean contiene(List<Letter> lista, char c) {
+        boolean contiene = false;
+        for (Letter letra : lista)
             if (letra.getCaracter() == c) {
-                return true;
+                contiene = true;
             }
-        }
-        return false;
+        return contiene;
     }
 
-    private static boolean esVocal(char c) {
-        c = Character.toLowerCase(c);
-        for (char vocal : VOCALES) {
-            if (c == vocal) return true;
-        }
-        return false;
+    //cuenta cuantas vocales hay en la lista de letras
+    private static int contarVocales(List<Letter> letras) {
+        int vocales = 0;
+        for (Letter letra : letras)
+            for (char vocal : VOCALES)
+                if (Character.toLowerCase(letra.getCaracter()) == vocal)
+                    vocales++;
+        return vocales;
     }
-
-
 }
