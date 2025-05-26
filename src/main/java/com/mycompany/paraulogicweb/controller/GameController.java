@@ -19,19 +19,17 @@ public class GameController extends HttpServlet {
 
     @Override
     public void init() {
+        //generar las letras
         List<Letter> letras = GameUtils.genararLetras();
         this.game = new Game(letras);
         Collections.shuffle(letras);
 
+        //buscar una letra central entre las letras generadas
         for (Letter letra : letras) {
             if (letra.isEsCentral()) {
-                this.letraCentral = letra;
+                this.letraCentral = letra; //asigna la letra centrañ
+                System.out.println("Letra central: " + letra.getCaracter());
             }
-        }
-        if (this.letraCentral == null) {
-            System.out.println("Letra central NO asignada correctamente.");
-        } else {
-            System.out.println("Letra central asignada: " + letraCentral.getCaracter());
         }
 
     }
@@ -47,34 +45,38 @@ public class GameController extends HttpServlet {
         if (dispatcher != null) {
             dispatcher.forward(request, response);
         } else {
-            response.sendError(HttpServletResponse.SC_NOT_FOUND, "Game page not found");
+            response.sendError(HttpServletResponse.SC_NOT_FOUND, "pagina no encontrada");
         }
     }
 
     @Override
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        String strPalabra = request.getParameter("palabra").toUpperCase();
+        //obtiene la palabra escrita
+        String strPalabra = request.getParameter("palabra");
         Word palabra = new Word(strPalabra);
         String mensaje = "";
 
-        // Usamos el método getLetrasComoString para obtener las letras válidas
         String letrasValidas = game.getTodasLetras();
 
+        //validar que las palabras sean validas
         if (!WorldValidator.validarPalabra(palabra, letraCentral, letrasValidas)) {
             mensaje = "La palabra no es válida";
         } else if (game.getPalabrasEncontradas().contains(palabra)) {
             mensaje = "La palabra ya ha sido encontrada";
         } else {
+            //si la palabra es valida y no se ha repetido se egrega a palabras encontradas
             game.getPalabrasEncontradas().add(palabra);
             game.getPuntuacion().agregarPuntos(palabra.calcularPuntos());
             mensaje = "Palabra encontrada: " + strPalabra;
         }
 
+        //asigna valores para mostrarlos en el index
         request.setAttribute("mensaje", mensaje);
         request.setAttribute("letras", game.getLetras());
         request.setAttribute("puntos", game.getPuntuacion());
         request.setAttribute("palabras", game.getPalabrasEncontradas());
 
+        //reeenvia los valores para actualizar la vista con los nuevos datos
         RequestDispatcher dispatcher = request.getRequestDispatcher("index.jsp");
         dispatcher.forward(request, response);
     }

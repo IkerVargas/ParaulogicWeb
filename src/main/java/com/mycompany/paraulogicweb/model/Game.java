@@ -1,9 +1,6 @@
 package com.mycompany.paraulogicweb.model;
 
-
-
 import com.mycompany.paraulogicweb.daos.WordDAO;
-
 import java.util.*;
 
 public class Game {
