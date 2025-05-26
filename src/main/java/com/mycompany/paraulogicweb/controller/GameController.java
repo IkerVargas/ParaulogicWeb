@@ -55,8 +55,6 @@ public class GameController extends HttpServlet {
         Word palabra = new Word(strPalabra);
         String mensaje = "";
 
-        String letrasValidas = game.getTodasLetras();
-
         //validar que las palabras sean validas
         if (!WorldValidator.validarPalabra(palabra, letraCentral, game.getTodasLetras())) {
             mensaje = "La palabra no es válida";
