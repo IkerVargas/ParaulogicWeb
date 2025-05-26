@@ -1,5 +1,6 @@
 package com.mycompany.paraulogicweb.controller;
 
+import com.mycompany.paraulogicweb.daos.WordDAO;
 import com.mycompany.paraulogicweb.model.*;
 import com.mycompany.paraulogicweb.utils.DatabaseConnection;
 
@@ -15,7 +16,7 @@ public class WorldValidator {
             System.out.println("La palabra no tiene la letra central o no tiene minimo 3 letras");
             palabraValida = false;
         //verifica si la palabra esta en la base de datos
-        } else if (!DatabaseConnection.isPalabraValida(texto.toLowerCase())) {
+        } else if (!WordDAO.isPalabraValida(texto.toLowerCase())) {
             System.out.println("La palabra no esta en la base de datos");
             palabraValida = false;
 

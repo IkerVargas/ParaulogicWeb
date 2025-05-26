@@ -28,18 +28,19 @@ public class WordDAO {
         return palabras;
     }
 
-    //comprueba que una palabra existe en la base de datos
-    public boolean existe(String word) {
-        String query = "SELECT COUNT(*) FROM words WHERE word = ?";
-        boolean existe = false;
+    //verifica si la palabra esta en la base de datos
+    public static boolean isPalabraValida(String palabra) {
+        boolean esValida = false;
+        String sql = "SELECT word FROM words WHERE word = ?";
         try (Connection conn = DatabaseConnection.conectar();
-             PreparedStatement stmt = conn.prepareStatement(query)) {
-            stmt.setString(1, word.toLowerCase());
-            ResultSet rs = stmt.executeQuery();
-            existe = rs.getInt(1) > 0;
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, palabra.toLowerCase());
+            try (ResultSet rs = stmt.executeQuery()) {
+                esValida = rs.next(); //devuelve true si hay una fila, osea que existe
+            }
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return existe;
+        return esValida;
     }
 }
