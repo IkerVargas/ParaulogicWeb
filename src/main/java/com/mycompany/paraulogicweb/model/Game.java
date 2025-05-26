@@ -33,20 +33,20 @@ public class Game {
     }
 
     public boolean agregarPalabra(String palabra) {
-        boolean palabraAgregada = true;
-        //verificar si la palabra se ha encontrado
-        for (Word w : palabrasEncontradas) {
-            if (w.getTexto().equals(palabra.toLowerCase())) {
-                palabraAgregada = false;
+        boolean agregada = true;
+
+        //verifica si ya se ha encomtrado
+        for (Word word : palabrasEncontradas) {
+            if (word.getTexto().equals(palabra.toLowerCase())) {
+                agregada = false;
             }
         }
-        //calcula y agregamos los puntos a la puntuacion
+
+        palabrasEncontradas.add(new Word(palabra.toLowerCase()));
         int puntos = calcularPuntos(palabra.toLowerCase());
         puntuacion.agregarPuntos(puntos);
-        //agrega la palabra a la lista
-        palabrasEncontradas.add(new Word(palabra.toLowerCase()));
 
-        return palabraAgregada;
+        return agregada;
     }
 
 
@@ -67,10 +67,10 @@ public class Game {
     private boolean sePuedeFormar(String palabra) {
         boolean valida = true;
         //obtiene todas las letras validas del juego
-        String letrasValidas = getTodasLetras().toUpperCase();
+        String letrasValidas = getTodasLetras().toLowerCase();
 
         //recorre cada letra de la palabra para ver si esta entre las que son validas
-        for (char c : palabra.toUpperCase().toCharArray()) {
+        for (char c : palabra.toLowerCase().toCharArray()) {
             if (letrasValidas.indexOf(c) == -1) {
                 //la letra no esta entre las que son validas
                 valida = false;
@@ -80,19 +80,12 @@ public class Game {
         return valida;
     }
 
-
     public String getTodasLetras() {
         //convierte las letras a un string
         StringBuilder letrasStr = new StringBuilder();
         //recorre cada letra y las concatena
         for (Letter letra : this.letras) {
-            //verifica si la letra es central y la agrega en mayuscula
-            if (letra.isEsCentral()) {
-                letrasStr.append(Character.toUpperCase(letra.getCaracter()));
-            } else {
-                //si no es central, la agrega en minuscula
-                letrasStr.append(Character.toLowerCase(letra.getCaracter()));
-            }
+            letrasStr.append(letra.getCaracter());
         }
         //devuelve el string con todas las letras
         return letrasStr.toString();

@@ -31,7 +31,6 @@ public class GameController extends HttpServlet {
                 System.out.println("Letra central: " + letra.getCaracter());
             }
         }
-
     }
 
     @Override
@@ -63,13 +62,12 @@ public class GameController extends HttpServlet {
             mensaje = "La palabra no es válida";
         } else {
             boolean palabraAgregada = game.agregarPalabra(strPalabra);
-            if (!palabraAgregada) {
-                mensaje = "La palabra ya ha sido encontrada";
-            } else {
+            if (palabraAgregada) {
                 mensaje = "Palabra encontrada: " + strPalabra;
+            } else {
+                mensaje = "La palabra ya ha sido encontrada";
             }
         }
-
 
         //asigna valores para mostrarlos en el index
         request.setAttribute("mensaje", mensaje);

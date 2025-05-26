@@ -6,28 +6,33 @@ import com.mycompany.paraulogicweb.utils.DatabaseConnection;
 public class WorldValidator {
 
     public static boolean validarPalabra(Word word, Letter letraCentral, String letrasValidas) {
-        boolean valido = true;
+        boolean palabraValida = true;
         String texto = word.getTexto().toUpperCase();
         letrasValidas = letrasValidas.toUpperCase();
 
+        //verifica si la palabra tiene la letra central
         if (texto.length() < 3 || !texto.contains(String.valueOf(Character.toUpperCase(letraCentral.getCaracter())))) {
             System.out.println("La palabra no tiene la letra central o no tiene minimo 3 letras");
-            valido = false;
-        }
+            palabraValida = false;
+        //verifica si la palabra esta en la base de datos
+        } else if (!DatabaseConnection.isPalabraValida(texto.toLowerCase())) {
+            System.out.println("La palabra no esta en la base de datos");
+            palabraValida = false;
 
-        //verifica si la palabra contiene las letras validas
-        for (char c : texto.toCharArray()) {
-            if (letrasValidas.indexOf(c) == -1) {
-                System.out.println("La palabra contiene letras no validas: " + c);
-                valido = false;
+        } else {
+            //verifica si la palabra contiene las letras validas
+            for (char c : texto.toCharArray()) {
+                for (char letraValida : letrasValidas.toCharArray()) {
+                    if (c == letraValida) {
+                        palabraValida = true;
+                    }
+                }
+                if (!palabraValida) {
+                    palabraValida = false;
+                }
             }
         }
-        //verifica si la palabra esta en la base de datos
-        if (!DatabaseConnection.isPalabraValida(texto.toLowerCase())) {
-            System.out.println("La palabra no esta en la base de datos");
-            valido = false;
-        }
 
-        return valido;
+        return palabraValida;
     }
 }
