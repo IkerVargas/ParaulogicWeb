@@ -52,30 +52,32 @@ public class GameUtils {
         }
 
         // Completa con letras de palabras que contienen la letra central, sin repetir letras ya añadidas
-        List<Character> letrasExtras = new ArrayList<>();
+        List<Character> letrasNoCentral = new ArrayList<>();
         for (String palabra : todasLasPalabras) {
             if (palabra.contains(String.valueOf(letraCentral)) && palabra.length() >= 3) {
                 for (char c : palabra.toCharArray()) {
-                    if (!letrasExtras.contains(c) && !contieneCaracter(letras, c)) {
-                        letrasExtras.add(c);
+                    if (!letrasNoCentral.contains(c) && !contieneCaracter(letras, c)) {
+                        letrasNoCentral.add(c);
                     }
                 }
             }
         }
 
-        // Mezcla las letras extras
-        Collections.shuffle(letrasExtras);
+        Collections.shuffle(letrasNoCentral);
 
         // Añade letras extras hasta completar 7 letras
-        for (char c : letrasExtras) {
+        for (char c : letrasNoCentral) {
             if (letras.size() >= 7) break;
             letras.add(new Letter(c, false));
         }
 
         // Asegura al menos 2 vocales y 4 consonantes (incluyendo la central)
-        int contarVocales = (int) letras.stream()
-                .filter(l -> esVocal(l.getCaracter()))
-                .count();
+        int contarVocales = 0;
+        for (Letter l : letras) {
+            if (esVocal(l.getCaracter())) {
+                contarVocales++;
+            }
+        }
 
         int contarConsonantes = letras.size() - contarVocales;
 
