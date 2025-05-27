@@ -77,7 +77,7 @@ public class GameUtils {
         //vuelve a marcar cual es la letra central
         List<Letter> resultado = new ArrayList<>();
         for (Letter l : letras) {
-            resultado.add(new Letter(l.getCaracter(), l.getCaracter() == letraCentral));
+            resultado.add(new Letter(l.getCaracter(), l.getCaracter() == letraCentral)); //marca la letra central
         }
 
         System.out.println("Letras generadas: " + resultado.stream().map(l -> String.valueOf(l.getCaracter())).toList());
