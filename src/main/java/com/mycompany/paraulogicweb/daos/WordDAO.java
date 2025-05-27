@@ -34,7 +34,7 @@ public class WordDAO {
         String sql = "SELECT word FROM words WHERE word = ?";
         try (Connection conn = DatabaseConnection.conectar();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setString(1, palabra.toLowerCase());
+            stmt.setString(1, palabra.toLowerCase()); //ponemos la palabra en minusculas para que coincida con la base de datos
             try (ResultSet rs = stmt.executeQuery()) {
                 esValida = rs.next(); //devuelve true si hay una fila, osea que existe
             }
